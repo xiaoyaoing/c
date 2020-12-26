@@ -1,0 +1,397 @@
+#include <stdio.h>
+#include <conio.h>
+int q, e;
+int flag=1;
+char d;
+int map[50][50] = { 0 };
+int win() {
+    int num = 0;
+    int m = 0, n = 0;
+    for (int m = 0;m < 11;m++) {
+        for (int n = 0;n < 12;n++) {
+            if (map[m][n] == 4)
+                num++;
+        }if (num != 0)
+            return 0;
+        // printf("Good job,you win.");
+    }return 1;
+}
+int map2[8][12] = { {0,0,0,1,1,1,1,1,0,0,0,0},
+                    {1,1,1,1,2,2,2,1,0,0,0,0},
+                    {1,3,3,1,4,4,2,1,0,0,0,0},
+                    {1,2,3,3,4,2,2,1,1,1,1,1},
+                    {1,2,5,1,2,1,2,1,2,2,2,1},
+                    {1,2,2,4,2,2,2,2,2,4,2,1},
+                    {1,2,2,1,1,1,1,1,1,1,3,1},
+                    {1,1,1,1,0,0,0,0,0,1,1,1}};
+int map1[6][9] = { {0,0,1,1,1,1,0,0,0},
+                   {1,1,1,2,2,1,1,1,1},
+                   {1,2,2,2,2,2,4,2,1},
+                   {1,2,1,2,2,1,4,2,1},
+                   {1,2,3,2,3,1,5,2,1},//6为到达目的地点的箱子，7为到达目的地点的玩家};
+                   {1,1,1,1,1,1,1,1,1} }; //0为空格，1为墙壁，2为可走区域，3为目标区，4为箱子，5为玩家
+int map3[11][11] = {{0,0,0,1,1,1,0,0,0,0,0},
+                    {0,0,1,1,2,1,0,1,1,1,1},
+                    {0,1,1,2,2,1,1,1,2,2,1},
+                    {1,1,2,4,2,2,2,2,2,2,1},
+                    {1,2,2,2,5,4,2,1,2,2,1},
+                    {1,1,1,2,4,1,1,1,2,2,1},
+                    {0,0,1,2,2,1,3,3,2,2,1},
+                    {0,1,1,2,1,1,3,1,2,1,1},
+                    {0,1,2,2,2,2,2,2,1,1,0},
+                    {0,1,2,2,2,2,2,1,1,0,0},
+                    {0,1,1,1,1,1,1,1,0,0,0}};
+void dmap() {
+    int i, j;
+    for (i = 0; i < 11; i++) {
+        for (j = 0; j < 12; j++) {
+            switch (map[i][j]) {
+            case 0:
+                printf("  ");
+                break;
+            case 1:
+                printf("■");
+                break;
+            case 2:
+                printf("  ");
+                break;
+            case 3:
+                printf("●");
+                break;
+            case 4:
+                printf("◆");
+                break;
+            case 5:
+                printf("★");
+                break;
+            case 6:
+                printf("◆");
+                break;
+            case 7:
+                printf("★");
+                break;
+            }
+        }
+        printf("\n");
+    }
+}
+void move() {
+    while (flag) {
+        int q, e;
+        for (q = 0;q < 11;q++) {
+            for (e = 0;e < 12;e++) {
+                if (map[q][e] == 5 || map[q][e] == 7)
+                    break;
+            }if (map[q][e] == 5 || map[q][e] == 7) {
+                break;
+            }//找到自己
+        }
+    //d=_getch();
+        //_kbhit();
+        if(_kbhit())
+            d=_getch();
+            
+            switch (d) {
+            case 'A':
+
+                if (map[q][e - 1] == 2) {
+                    if (map[q][e] == 5) {
+                        map[q][e] = 2;
+                        map[q][e - 1] = 5;
+                    }
+                    //正常走
+                    else if (map[q][e] == 7) {
+                        map[q][e] = 3;//走出目的格
+                        map[q][e - 1] = 5;
+                    }
+                }
+                else if (map[q][e - 1] == 3) {
+                    if (map[q][e] == 5) {
+                        map[q][e] = 2;
+                        map[q][e - 1] = 7;
+                    }
+                    //正常走
+                    else if (map[q][e] == 7) {
+                        map[q][e] = 3;//走出目的格
+                        map[q][e - 1] = 7;
+                    }
+                }
+                else if (map[q][e - 1] == 1 || ((map[q][e - 1] == 4 && map[q][e - 2] != 2 && map[q][e - 2] != 3)))
+                    continue;
+                else if (map[q][e - 1] == 4 && map[q][e - 2] != 1 && map[q][e - 2] != 4 && map[q][e - 2] != 6)//箱子不在目标
+                {
+                    if (map[q][e] == 5)
+                    {
+                        map[q][e] = 2;
+                        map[q][e - 1] = 5;
+                        map[q][e - 2] = (map[q][e - 2] == 3) ? 6 : 4;
+                    }
+                    else if (map[q][e] == 7)
+                    {
+                        map[q][e] = 3;
+                        map[q][e - 1] = 5;
+                        map[q][e - 2] = (map[q][e - 2] == 3) ? 6 : 4;
+                    }
+                }
+                else if (map[q][e - 1] == 6 && map[q][e - 2] != 1 && map[q][e - 2] != 4 && map[q][e - 2] != 6) {
+                    {if (map[q][e] == 5)
+                    {
+                        map[q][e] = 2;
+                        map[q][e - 1] = 7;
+                        map[q][e - 2] = (map[q][e - 2] == 3) ? 6 : 4;
+                    }
+                    else if (map[q][e] == 7)
+                    {
+                        map[q][e] = 3;
+                        map[q][e - 1] = 7;
+                        map[q][e - 2] = (map[q][e - 2] == 3) ? 6 : 4;
+                    }
+                    }
+                //else if (map[q][e - 1]);
+                }
+                
+            
+            case 'W':
+                if (map[q - 1][e] == 2) {
+                    if (map[q][e] == 5) {
+                        map[q][e] = 2;//正常走
+                        map[q - 1][e] = 5;
+                    }    
+                    
+                    else if (map[q][e] == 7) {
+                            map[q][e] = 3;//走出目的格
+                        map[q-1][e] = 5;}
+                    }
+                else if (map[q- 1][e ] == 3) {
+                        if (map[q][e] == 5) {
+                            map[q][e] = 2;
+                            map[q - 1][e] = 7;
+                        }
+                        //正常走
+                        else if (map[q][e] == 7) {
+                            map[q][e] = 3;//走出目的格
+                            map[q - 1][e] = 7;
+                        }
+                    }
+                    else if (map[q - 1][e] == 1 || ((map[q - 1][e] == 4 && map[q - 2][e] != 2 && map[q - 2][e] != 3)))
+                        continue;
+                    else if (map[q-1][e] == 4 && map[q-2][e] != 1 && map[q-2][e] != 4 && map[q-2][e] != 6)//箱子不在目标
+                    {
+                        if (map[q][e] == 5)
+                        {
+                            map[q][e] = 2;
+                            map[q-1][e] = 5;
+                            map[q-2][e] = (map[q-2][e] == 3) ? 6 : 4;
+                        }
+                        else if (map[q][e] == 7)
+                        {
+                            map[q][e] = 3;
+                            map[q-1][e] = 5;
+                            map[q-2][e] = (map[q-2][e] == 3) ? 6 : 4;
+                        }
+                    }
+                    else if (map[q- 1][e ] == 6 && map[q- 2][e ] != 1 && map[q- 2][e ] != 4 && map[q- 2][e ] != 6) {
+                        {  if (map[q][e] == 5)
+                        {
+                            map[q][e] = 2;
+                            map[q - 1][e] = 7;
+                            map[q - 2][e] = (map[q - 2][e] == 3) ? 6 : 4;
+                        }
+                        else if (map[q][e] == 7)
+                        {
+                            map[q][e] = 3;
+                            map[q - 1][e] = 7;
+                            map[q - 2][e] = (map[q - 2][e] == 3) ? 6 : 4;
+                        }}
+                    }
+                    
+                //分界线
+            case 'D':
+                if (map[q][e + 1] == 2) {
+                    if (map[q][e] == 5) {
+                        map[q][e] = 2;//正常走
+                        map[q][e + 1] = 5;
+                    }
+                    else if (map[q][e] == 7) {
+                        map[q][e] = 3;//走出目的格
+                    map[q][e + 1] = 5;}
+                }
+                else if (map[q][e +1] == 3) {
+                    if (map[q][e] == 5) {
+                        map[q][e] = 2;
+                        map[q][e + 1] = 7;
+                    }
+                    //正常走
+                    else if (map[q][e] == 7) {
+                        map[q][e] = 3;//走出目的格
+                        map[q][e + 1] = 7;
+                    }
+                }
+                else if (map[q][e + 1] == 1 || ((map[q][e + 1] == 4 && map[q][e + 2] != 2 && map[q][e + 2] != 3)))
+                    continue;
+                else if (map[q][e + 1] == 4 && map[q][e + 2] != 1 && map[q][e + 2] != 4 && map[q][e + 2] != 6)//箱子不在目标
+                {
+                    if (map[q][e] == 5)
+                    {
+                        map[q][e] = 2;
+                        map[q][e + 1] = 5;
+                        map[q][e + 2] = (map[q][e + 2] == 3) ? 6 : 4;
+                    }
+                    else if (map[q][e] == 7)
+                    {
+                        map[q][e] = 3;
+                        map[q][e + 1] = 5;
+                        map[q][e + 2] = (map[q][e + 2] == 3) ? 6 : 4;
+                    }
+                }
+                else if (map[q][e + 1] == 6 && map[q][e + 2] != 1 && map[q][e + 2] != 4 && map[q][e + 2] != 6) {
+                    {if (map[q][e] == 5)
+                    {
+                        map[q][e] = 2;
+                        map[q][e + 1] = 7;
+                        map[q][e + 2] = (map[q][e + 2] == 3) ? 6 : 4;
+                    }
+                    else if (map[q][e] == 7)
+                    {
+                        map[q][e] = 3;
+                        map[q][e + 1] = 7;
+                        map[q][e + 2] = (map[q][e + 2] == 3) ? 6 : 4;
+                    }}
+                }
+                /*else if (map[q][e + 1] == 1 || ((map[q][e + 1] == 4 && map[q][e + 2] != 2 && map[q][e + 2] != 3)))
+                    continue;*/
+
+            case 'S':
+                if (map[q+1][e] == 2) {
+                    if (map[q][e] == 5) {
+                        map[q][e] = 2;//正常走
+                        map[q+ 1][e ] = 5;
+                    }
+                    else if (map[q][e] == 7) {
+                        map[q][e] = 3;//走出目的格
+                        map[q + 1][e] = 5;
+                    }
+                }
+                else if (map[q+1][e] == 3) {
+                    if (map[q][e] == 5) {
+                        map[q][e] = 2;
+                        map[q+1][e] = 7;
+                    }
+                    //正常走   
+                    else if (map[q][e] == 7) {
+                        map[q][e] = 3;//走出目的格
+                        map[q+1][e ] = 7;
+                    }
+                }
+                else if (map[q + 1][e] == 1 || ((map[q + 1][e] == 4 && map[q + 2][e] != 2 && map[q + 2][e] != 3)))
+                    continue;
+                else if (map[q + 1][e] == 4 && map[q + 2][e] != 1 && map[q + 2][e] != 4 && map[q + 2][e] != 6)//箱子不在目标
+                {
+                    if (map[q][e] == 5)
+                    {
+                        map[q][e] = 2;
+                        map[q+1][e] = 5;
+                        map[q+2][e] = (map[q+2][e] == 3) ? 6 : 4;
+                    }
+                    else if (map[q][e] == 7)
+                    {
+                        map[q][e] = 3;
+                        map[q +1][e] = 5;
+                        map[q +2][e] = (map[q + 2][e] == 3) ? 6 : 4;
+                    }
+                }
+                else if (map[q + 1][e] == 6 && map[q + 2][e] != 1 && map[q + 2][e] != 4 && map[q + 2][e] != 6) {
+                    {if (map[q][e] == 5)
+                    {
+                        map[q][e] = 2;
+                        map[q + 1][e] = 7;
+                        map[q + 2][e] = (map[q + 2][e] == 3) ? 6 : 4;
+                    }
+                    else if (map[q][e] == 7)
+                    {
+                        map[q][e] = 3;
+                        map[q + 1][e] = 7;
+                        map[q + 2][e] = (map[q + 2][e] == 3) ? 6 : 4;
+                    }}
+                }
+            }
+            dmap();   
+            if (win() == 1)
+                break;
+    }
+}
+/*void dmap() {
+    int i, j;
+    for (i = 0; i <11; i++) {
+        for (j = 0; j <12 ; j++) {
+            switch (map[i][j]) {
+            case 0:
+                printf("  ");
+                break;
+            case 1:
+                printf("■");
+                break;
+            case 2:
+                printf("  ");
+                break;
+            case 3:
+                printf("●");
+                break;
+            case 4:
+                printf("◆");
+                break;
+            case 5:
+                printf("★");
+                break;
+            case 6:
+                printf("●");
+            case 7:
+                printf("★");
+            }
+        }
+        printf("\n");}
+}*/
+void tou_xi(int q) {
+    if (q == 1) {
+        for (int i = 0;i < 6;i++) {
+            for (int j = 0;j < 9;j++) {
+                map[i][j] = map1[i][j];
+            }
+        }
+    }
+    else if (q == 2) {
+        for (int i = 0;i < 8;i++) {
+            for (int j = 0;j < 12;j++) {
+                map[i][j] = map2[i][j];
+            }
+        }
+    }
+    else if (q == 3) {
+        for (int i = 0;i < 11;i++) {
+            for (int j = 0;j < 11;j++) {
+                map[i][j] = map3[i][j];
+            }
+        }
+    }
+}
+void choose_map() {
+    int tu;
+    printf("************************\n\n");
+
+    printf("选择地图，请输入1，2或3\n");
+    printf("难度递增哦");
+    scanf_s("%d", &tu);
+    tou_xi(tu);}
+     int main()
+     {
+        printf("黑框框推箱子\n");
+        printf("WASD移动(就像cs一样)，记得大写锁定。\n");
+        printf("圆形为目标区域，星形为玩家，菱形为箱子");
+        printf("键盘监听掉线了(写完这个就把vs删掉)。\n");
+        printf("无伤大雅，只需每次移动后敲击任意键(不要连续按方向键)就行啦。\n");
+        choose_map();//已复制地图；
+        dmap();
+        move();
+        printf("Good job,you win.");
+        return 0;
+    }
